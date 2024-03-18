@@ -16,6 +16,9 @@ target_sources(json-parser
 )
 add_library(JSONParser::JSONParser ALIAS json-parser)
 
-add_executable(test-json-parser test/JSONParserTest.cpp)
+if (BUILD_TESTING)
+    add_executable(test-json-parser test/JSONParserTest.cpp)
+    target_link_libraries(test-json-parser PUBLIC JSONParser::JSONParser)
 
-target_link_libraries(test-json-parser PUBLIC JSONParser::JSONParser)
+    add_test(NAME test-json-parser COMMAND test-json-parser)
+endif ()
