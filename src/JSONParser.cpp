@@ -162,27 +162,41 @@ auto parse_object(std::string_view::iterator& cursor, std::string_view::iterator
     if (*cursor != '{') return std::nullopt;
 
     Object object{};
-    for (size_t depth = 0; cursor != end; ++cursor) {
+    while (cursor != end) {
+        // Iterate over whitespace
+        if (skip_whitespace(cursor, end) == end) return std::nullopt;
+
         if (*cursor == '{') {
-            depth += 1;
+            cursor += 1;
             continue;
         }
 
-        skip_whitespace(cursor, end);
-
-        // Break loop if closing brace for scope was reached
-        if (*cursor == '}' && --depth == 0) {
-            cursor += 1;
-            break;
-        }
+        // Iterate over whitespace
+        if (skip_whitespace(cursor, end) == end) return std::nullopt;
 
         auto entry = parse_key_value(cursor, end);
-        if (!entry.has_value()) return std::nullopt;
-        auto [key, value] = entry.value();
-        object.map.insert({key, value});
+        if (entry.has_value()) {
+            auto [key, value] = entry.value();
+            object.map.insert({key, value});
+
+            // Iterate over whitespace
+            if (skip_whitespace(cursor, end) == end) return std::nullopt;
+
+            if (*cursor == ',') {
+                cursor += 1;
+                continue;
+            }
+        }
+
+        if (*cursor == '}') {
+            cursor += 1;
+            return object;
+        }
+
+        return std::nullopt;
     }
 
-    return object;
+    return std::nullopt;
 }
 
 // NOLINTNEXTLINE(*-no-recursion)
