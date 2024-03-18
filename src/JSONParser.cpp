@@ -89,4 +89,32 @@ auto parse_number(std::string_view json) -> std::optional<double> {
     auto cursor = json.begin();
     return parse_number(cursor, json.end());
 }
+
+auto parse_string(std::string_view::iterator& cursor, const std::string_view::iterator& end)
+    -> std::optional<std::string_view> {
+    if (*cursor != '"') return std::nullopt;
+
+    std::stringstream ss{};
+    cursor += 1;
+    char last_char = '"';
+    ss << '"';
+
+    for (; cursor != end; ++cursor) {
+        ss << *cursor;
+
+        if (*cursor == '"' && last_char != '\\') {
+            cursor += 1;
+            break;
+        }
+
+        last_char = *cursor;
+    }
+
+    return ss.str();
+}
+
+auto parse_string(std::string_view json) -> std::optional<std::string_view> {
+    auto cursor = json.begin();
+    return parse_string(cursor, json.end());
+}
 }  // namespace json
