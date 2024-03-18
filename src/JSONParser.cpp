@@ -4,6 +4,13 @@
 #include <string>
 
 namespace json {
+std::string_view::iterator& skip_whitespace(std::string_view::iterator& cursor,
+                                            const std::string_view::iterator& end) {
+    // Iterate over whitespace
+    while (cursor != end && std::isspace(*cursor)) cursor += 1;
+    return cursor;
+}
+
 auto parse_null(std::string_view::iterator& cursor, const std::string_view::iterator& end)
     -> std::optional<std::string> {
     if (*cursor != 'n') return std::nullopt;
@@ -121,12 +128,68 @@ auto parse_string(std::string_view json) -> std::optional<std::string> {
 // NOLINTNEXTLINE(*-no-recursion)
 [[nodiscard]] auto parse_value(std::string_view::iterator& cursor,
                                const std::string_view::iterator& end) -> std::optional<Value> {
+    if (*cursor == '{') return parse_object(cursor, end);
     if (*cursor == '"') return parse_string(cursor, end);
     if (*cursor == '+' || *cursor == '-' || std::isdigit(*cursor)) return parse_number(cursor, end);
     if (*cursor == 'n') return parse_null(cursor, end);
     if (*cursor == 't' || *cursor == 'f') return parse_boolean(cursor, end);
 
     return std::nullopt;
+}
+
+// NOLINTNEXTLINE(*-no-recursion)
+[[nodiscard]] auto parse_key_value(std::string_view::iterator& cursor,
+                                   const std::string_view::iterator& end)
+    -> std::optional<std::pair<std::string, Value>> {
+    // Iterate over whitespace
+    if (skip_whitespace(cursor, end) == end) return std::nullopt;
+
+    auto key = parse_string(cursor, end);
+    if (!key.has_value()) return std::nullopt;
+
+    // Iterate over whitespace
+    if (skip_whitespace(cursor, end) == end) return std::nullopt;
+
+    // Check for colon literal
+    if (*cursor != ':' || ++cursor == end) return std::nullopt;
+
+    // Iterate over whitespace
+    if (skip_whitespace(cursor, end) == end) return std::nullopt;
+
+    auto value = parse_value(cursor, end);
+    if (!value.has_value()) return std::nullopt;
+
+    return std::pair<std::string, Value>{key.value(), value.value()};
+}
+
+// NOLINTNEXTLINE(*-no-recursion)
+auto parse_object(std::string_view::iterator& cursor, std::string_view::iterator const& end)
+    -> std::optional<Object> {
+    if (*cursor != '{') return std::nullopt;
+
+    Object object{};
+    for (size_t depth = 0; cursor != end; ++cursor) {
+        if (*cursor == '{') {
+            depth += 1;
+            continue;
+        }
+
+        // Break loop if closing brace for scope was reached
+        if (*cursor == '}' && --depth == 0) break;
+
+        auto entry = parse_key_value(cursor, end);
+        if (!entry.has_value()) return std::nullopt;
+        auto [key, value] = entry.value();
+        object.map.insert({key, value});
+    }
+
+    return object;
+}
+
+// NOLINTNEXTLINE(*-no-recursion)
+auto parse_object(std::string_view json) -> std::optional<Object> {
+    auto cursor = json.begin();
+    return parse_object(cursor, json.end());
 }
 
 [[nodiscard]] auto parse_value(std::string_view json) -> std::optional<Value> {
