@@ -180,6 +180,8 @@ auto parse_object(std::string_view::iterator& cursor, std::string_view::iterator
             continue;
         }
 
+        skip_whitespace(cursor, end);
+
         // Break loop if closing brace for scope was reached
         if (*cursor == '}' && --depth == 0) {
             cursor += 1;
