@@ -69,10 +69,28 @@ void test_parse_number() {
     }
 }
 
+void test_parse_string() {
+    constexpr std::array<std::string_view, 5> test_correct{
+        "\"\"",
+        "\"1\"",
+        "\"this is a string\"",
+        R"("escape \" me \" please")",
+        R"("escape \" me \" please with some null and true and false 123 string")",
+    };
+
+    for (const auto& input : test_correct) {
+        auto cursor = input.begin();
+        auto end = input.end();
+
+        print_result(input, cursor, end, json::parse_string(input), input);
+    }
+}
+
 int main(int argc, char** argv) {
     std::vector<std::string> args(argv, argv + argc);
 
     test_parse_null();
     test_parse_boolean();
     test_parse_number();
+    test_parse_string();
 }
