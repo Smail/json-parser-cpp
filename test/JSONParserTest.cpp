@@ -87,6 +87,25 @@ void test_parse_string() {
     }
 }
 
+void test_parse_object() {
+    std::vector<std::string> inputs{
+        "{}",
+        R"({"key": 1})",
+        R"({"key": { "subobj" : 1 }})",
+    };
+    for (const auto& input : inputs) {
+        std::cout << "INPUT: " << input << std::endl;
+        auto result = json::parse_object(input);
+        if (!result.has_value()) {
+            std::cerr << "FAILED" << std::endl;
+            return;
+        }
+
+        std::cout << "SUCCESS" << std::endl;
+        std::cout << result.value() << std::endl;
+    }
+}
+
 int main(int argc, char** argv) {
     std::vector<std::string> args(argv, argv + argc);
 
