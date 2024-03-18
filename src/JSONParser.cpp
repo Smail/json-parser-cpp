@@ -118,6 +118,22 @@ auto parse_string(std::string_view json) -> std::optional<std::string_view> {
     return parse_string(cursor, json.end());
 }
 
+// NOLINTNEXTLINE(*-no-recursion)
+[[nodiscard]] auto parse_value(std::string_view::iterator& cursor,
+                               const std::string_view::iterator& end) -> std::optional<Value> {
+    if (*cursor == '"') return parse_string(cursor, end);
+    if (*cursor == '+' || *cursor == '-' || std::isdigit(*cursor)) return parse_number(cursor, end);
+    if (*cursor == 'n') return parse_null(cursor, end);
+    if (*cursor == 't' || *cursor == 'f') return parse_boolean(cursor, end);
+
+    return std::nullopt;
+}
+
+[[nodiscard]] auto parse_value(std::string_view json) -> std::optional<Value> {
+    auto cursor = json.begin();
+    return parse_value(cursor, json.end());
+}
+
 std::ostream& operator<<(std::ostream& os, const Object& obj) {
     os << "{\n";
     int i = 0;
