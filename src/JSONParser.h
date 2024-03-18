@@ -49,6 +49,11 @@ struct Array {
 
 [[nodiscard]] auto parse_object(std::string_view json) -> std::optional<Object>;
 
+[[nodiscard]] auto parse_array(std::string_view::iterator& cursor,
+                               const std::string_view::iterator& end) -> std::optional<Array>;
+
+[[nodiscard]] auto parse_array(std::string_view json) -> std::optional<Array>;
+
 [[nodiscard]] auto parse_value(std::string_view::iterator& cursor,
                                const std::string_view::iterator& end) -> std::optional<Value>;
 
