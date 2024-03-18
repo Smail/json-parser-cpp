@@ -52,9 +52,27 @@ void test_parse_boolean() {
     }
 }
 
+void test_parse_number() {
+    using TestSet = std::pair<std::string_view, double>;
+
+    constexpr std::array<TestSet, 7> test_correct{
+        TestSet{"1", 1},    {"+1", 1},    {"-1", -1},
+        {"938475", 938475}, {"00000", 0}, {"34589.23234", 34589.23234},
+        {"13e+14", 13e+14},
+    };
+
+    for (const auto& [input, expected] : test_correct) {
+        auto cursor = input.begin();
+        auto end = input.end();
+
+        print_result(input, cursor, end, json::parse_number(cursor, end), auto{expected});
+    }
+}
+
 int main(int argc, char** argv) {
     std::vector<std::string> args(argv, argv + argc);
 
     test_parse_null();
     test_parse_boolean();
+    test_parse_number();
 }
