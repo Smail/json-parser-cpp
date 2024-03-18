@@ -176,7 +176,10 @@ auto parse_object(std::string_view::iterator& cursor, std::string_view::iterator
         }
 
         // Break loop if closing brace for scope was reached
-        if (*cursor == '}' && --depth == 0) break;
+        if (*cursor == '}' && --depth == 0) {
+            cursor += 1;
+            break;
+        }
 
         auto entry = parse_key_value(cursor, end);
         if (!entry.has_value()) return std::nullopt;
