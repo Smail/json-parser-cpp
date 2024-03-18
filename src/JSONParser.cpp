@@ -5,7 +5,7 @@
 
 namespace json {
 auto parse_null(std::string_view::iterator& cursor, const std::string_view::iterator& end)
-    -> std::optional<std::string_view> {
+    -> std::optional<std::string> {
     if (*cursor != 'n') return std::nullopt;
     if ((cursor + 1) == end || *++cursor != 'u') return std::nullopt;
     if ((cursor + 1) == end || *++cursor != 'l') return std::nullopt;
@@ -15,7 +15,7 @@ auto parse_null(std::string_view::iterator& cursor, const std::string_view::iter
     return "null";
 }
 
-auto parse_null(std::string_view json) -> std::optional<std::string_view> {
+auto parse_null(std::string_view json) -> std::optional<std::string> {
     auto cursor = json.begin();
     return parse_null(cursor, json.end());
 }
@@ -91,7 +91,7 @@ auto parse_number(std::string_view json) -> std::optional<double> {
 }
 
 auto parse_string(std::string_view::iterator& cursor, const std::string_view::iterator& end)
-    -> std::optional<std::string_view> {
+    -> std::optional<std::string> {
     if (*cursor != '"') return std::nullopt;
 
     std::stringstream ss{};
@@ -113,7 +113,7 @@ auto parse_string(std::string_view::iterator& cursor, const std::string_view::it
     return ss.str();
 }
 
-auto parse_string(std::string_view json) -> std::optional<std::string_view> {
+auto parse_string(std::string_view json) -> std::optional<std::string> {
     auto cursor = json.begin();
     return parse_string(cursor, json.end());
 }
@@ -155,7 +155,7 @@ std::ostream& operator<<(std::ostream& os, const Value& value) {
     std::visit(
         [&os](auto& x) {
             using T = std::decay_t<decltype(x)>;
-            if constexpr (std::is_same_v<T, Object> || std::is_same_v<T, std::string_view> ||
+            if constexpr (std::is_same_v<T, Object> || std::is_same_v<T, std::string> ||
                           std::is_same_v<T, double> || std::is_same_v<T, Array>) {
                 os << x;
             } else if constexpr (std::is_same_v<T, bool>) {

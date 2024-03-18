@@ -23,7 +23,8 @@ void print_result(std::string_view input, const std::string_view::iterator& begi
     if (begin == end) {
         std::cout << std::format("{} - Start iterator matches end\n", kPassed);
     } else {
-        std::cout << std::format("{} - Start iterator is not at the end\n", kFailed);
+        std::cout << std::format("{} - Start iterator is not at the end! Distance: {}\n", kFailed,
+                                 std::distance(begin, end));
     }
 }
 
@@ -82,7 +83,7 @@ void test_parse_string() {
         auto cursor = input.begin();
         auto end = input.end();
 
-        print_result(input, cursor, end, json::parse_string(input), input);
+        print_result(input, cursor, end, json::parse_string(cursor, end), input);
     }
 }
 
@@ -93,4 +94,7 @@ int main(int argc, char** argv) {
     test_parse_boolean();
     test_parse_number();
     test_parse_string();
+    test_parse_object();
+
+    system("pause");
 }
