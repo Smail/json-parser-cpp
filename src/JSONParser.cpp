@@ -12,7 +12,8 @@ Array::Array(std::initializer_list<Value> xs) : data{xs} {}
 std::string_view::iterator& skip_whitespace(std::string_view::iterator& cursor,
                                             const std::string_view::iterator& end) {
     // Iterate over whitespace
-    while (cursor != end && std::isspace(*cursor)) cursor += 1;
+    auto is_whitespace = [](char c) { return c == ' ' || c == '\n' || c == '\r' || c == '\t'; };
+    while (cursor != end && is_whitespace(*cursor)) cursor += 1;
     return cursor;
 }
 
