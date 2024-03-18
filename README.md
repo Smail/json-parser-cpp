@@ -4,6 +4,8 @@ A JSON parser for modern C++.
 
 ## Usage
 
+### C++
+
 ```cpp
 #include <JSONParser.h>
 
@@ -13,6 +15,15 @@ int main() {
         // ...
     }
 }
+```
+
+### CMake
+
+```cmake
+add_executable(example example.cpp)
+
+add_subdirectory(json-parser-cpp)
+target_link_libraries(example PUBLIC JSONParser::JSONParser)
 ```
 
 ## Backlog
