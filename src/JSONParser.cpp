@@ -4,6 +4,11 @@
 #include <string>
 
 namespace json {
+Object::Object(std::initializer_list<std::unordered_map<std::string, Value>::value_type> xs)
+    : map{xs} {}
+
+Array::Array(std::initializer_list<Value> xs) : data{xs} {}
+
 std::string_view::iterator& skip_whitespace(std::string_view::iterator& cursor,
                                             const std::string_view::iterator& end) {
     // Iterate over whitespace
@@ -271,5 +276,19 @@ std::ostream& operator<<(std::ostream& os, const Value& value) {
         value);
 
     return os;
+}
+
+bool operator==(const Value& lhs, const Value& rhs) {
+    if (lhs.index() != rhs.index()) return false;
+    if (std::holds_alternative<bool>(lhs)) return std::get<bool>(lhs) == std::get<bool>(rhs);
+    if (std::holds_alternative<std::string>(lhs))
+        return std::get<std::string>(lhs) == std::get<std::string>(rhs);
+    if (std::holds_alternative<Object>(lhs))
+        return std::get<Object>(lhs).map == std::get<Object>(rhs).map;
+    if (std::holds_alternative<Array>(lhs))
+        return std::get<Array>(lhs).data == std::get<Array>(rhs).data;
+    if (std::holds_alternative<double>(lhs)) return std::get<double>(lhs) == std::get<double>(rhs);
+
+    return false;
 }
 }  // namespace json

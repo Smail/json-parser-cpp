@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -14,11 +15,15 @@ class Array;
 using Value = std::variant<std::string, Object, double, bool, Array>;
 
 struct Object {
+    explicit Object(std::initializer_list<std::unordered_map<std::string, Value>::value_type> xs);
+
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
     std::unordered_map<std::string, Value> map{};
 };
 
 struct Array {
+    explicit Array(std::initializer_list<Value> xs);
+
     friend std::ostream& operator<<(std::ostream& os, const Array& obj);
     std::vector<Value> data{};
 };
@@ -58,4 +63,5 @@ struct Array {
                                const std::string_view::iterator& end) -> std::optional<Value>;
 
 std::ostream& operator<<(std::ostream& os, const Value& value);
+bool operator==(const Value& lhs, const Value& rhs);
 }  // namespace json
