@@ -35,8 +35,26 @@ void test_parse_null() {
     print_result(null, cursor, end, json::parse_null(cursor, end), null);
 }
 
+void test_parse_boolean() {
+    {
+        std::string_view true_ = "true";
+        auto cursor = true_.begin();
+        auto end = true_.end();
+        print_result(true_, cursor, end, json::parse_boolean(cursor, end), true_);
+        if (cursor != end) throw std::runtime_error("Not equal");
+    }
+    {
+        std::string_view false_ = "false";
+        auto cursor = false_.begin();
+        auto end = false_.end();
+        print_result(false_, cursor, end, json::parse_boolean(cursor, end), false_);
+        if (cursor != end) throw std::runtime_error("Not equal");
+    }
+}
+
 int main(int argc, char** argv) {
     std::vector<std::string> args(argv, argv + argc);
 
     test_parse_null();
+    test_parse_boolean();
 }
