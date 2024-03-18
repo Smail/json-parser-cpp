@@ -131,19 +131,6 @@ auto parse_string(std::string_view json) -> std::optional<std::string> {
 }
 
 // NOLINTNEXTLINE(*-no-recursion)
-[[nodiscard]] auto parse_value(std::string_view::iterator& cursor,
-                               const std::string_view::iterator& end) -> std::optional<Value> {
-    if (*cursor == '{') return parse_object(cursor, end);
-    if (*cursor == '"') return parse_string(cursor, end);
-    if (*cursor == '+' || *cursor == '-' || std::isdigit(*cursor)) return parse_number(cursor, end);
-    if (*cursor == 'n') return parse_null(cursor, end);
-    if (*cursor == 't' || *cursor == 'f') return parse_boolean(cursor, end);
-    if (*cursor == '[') return parse_array(cursor, end);
-
-    return std::nullopt;
-}
-
-// NOLINTNEXTLINE(*-no-recursion)
 [[nodiscard]] auto parse_key_value(std::string_view::iterator& cursor,
                                    const std::string_view::iterator& end)
     -> std::optional<std::pair<std::string, Value>> {
@@ -240,7 +227,20 @@ auto parse_array(std::string_view json) -> std::optional<Array> {
     return parse_array(cursor, json.end());
 }
 
-[[nodiscard]] auto parse_value(std::string_view json) -> std::optional<Value> {
+// NOLINTNEXTLINE(*-no-recursion)
+[[nodiscard]] auto parse_value(std::string_view::iterator& cursor,
+                               const std::string_view::iterator& end) -> std::optional<Value> {
+    if (*cursor == '{') return parse_object(cursor, end);
+    if (*cursor == '"') return parse_string(cursor, end);
+    if (*cursor == '+' || *cursor == '-' || std::isdigit(*cursor)) return parse_number(cursor, end);
+    if (*cursor == 'n') return parse_null(cursor, end);
+    if (*cursor == 't' || *cursor == 'f') return parse_boolean(cursor, end);
+    if (*cursor == '[') return parse_array(cursor, end);
+
+    return std::nullopt;
+}
+
+auto parse_value(std::string_view json) -> std::optional<Value> {
     auto cursor = json.begin();
     return parse_value(cursor, json.end());
 }

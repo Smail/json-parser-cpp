@@ -62,6 +62,8 @@ struct Array {
 [[nodiscard]] auto parse_value(std::string_view::iterator& cursor,
                                const std::string_view::iterator& end) -> std::optional<Value>;
 
+[[nodiscard]] auto parse_value(std::string_view json) -> std::optional<Value>;
+
 std::ostream& operator<<(std::ostream& os, const Value& value);
 bool operator==(const Value& lhs, const Value& rhs);
 }  // namespace json
