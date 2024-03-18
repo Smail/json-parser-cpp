@@ -106,6 +106,26 @@ void test_parse_object() {
     }
 }
 
+void test_parse_array() {
+    std::vector<std::string> inputs{
+        "[1, 2, 3, 4]",
+        "[1, [2, 3], 4]",
+        "[1, true, null, \"string\"]",
+    };
+
+    for (const auto& input : inputs) {
+        std::cout << "INPUT: " << input << std::endl;
+        auto result = json::parse_array(input);
+        if (!result.has_value()) {
+            std::cerr << "FAILED" << std::endl;
+            return;
+        }
+
+        std::cout << "SUCCESS" << std::endl;
+        std::cout << result.value() << std::endl;
+    }
+}
+
 int main(int argc, char** argv) {
     std::vector<std::string> args(argv, argv + argc);
 
@@ -114,6 +134,7 @@ int main(int argc, char** argv) {
     test_parse_number();
     test_parse_string();
     test_parse_object();
+    test_parse_array();
 
     system("pause");
 }
