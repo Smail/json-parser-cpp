@@ -5,6 +5,7 @@ project(json-parser)
 include(CTest)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options("-Werror=return-type")
 
 add_library(json-parser)
