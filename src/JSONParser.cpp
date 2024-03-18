@@ -117,4 +117,39 @@ auto parse_string(std::string_view json) -> std::optional<std::string_view> {
     auto cursor = json.begin();
     return parse_string(cursor, json.end());
 }
+
+std::ostream& operator<<(std::ostream& os, const Object& obj) {
+    os << "{\n";
+    int i = 0;
+    for (const auto& [key, value] : obj.map) {
+        os << '\t' << key << ": " << value << (i++ < obj.map.size() ? ",\n" : "\n");
+    }
+    return (os << '}');
+}
+
+std::ostream& operator<<(std::ostream& os, const Array& array) {
+    os << '[';
+    for (int i = 0; i < array.data.size(); ++i) {
+        os << array.data[i] << ((i + 1 < array.data.size()) ? ", " : "");
+    }
+    return (os << ']');
+}
+
+std::ostream& operator<<(std::ostream& os, const Value& value) {
+    std::visit(
+        [&os](auto& x) {
+            using T = std::decay_t<decltype(x)>;
+            if constexpr (std::is_same_v<T, Object> || std::is_same_v<T, std::string_view> ||
+                          std::is_same_v<T, double> || std::is_same_v<T, Array>) {
+                os << x;
+            } else if constexpr (std::is_same_v<T, bool>) {
+                os << std::boolalpha << x;
+            } else {
+                static_assert(false, "Missing variant implementation");
+            }
+        },
+        value);
+
+    return os;
+}
 }  // namespace json
