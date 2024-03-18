@@ -22,4 +22,7 @@ if (BUILD_TESTING)
     target_link_libraries(test-json-parser PUBLIC JSONParser::JSONParser)
 
     add_test(NAME test-json-parser COMMAND test-json-parser)
+
+    file(COPY "test/res/test.json" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+    file(COPY "test/res/test2.json" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 endif ()
